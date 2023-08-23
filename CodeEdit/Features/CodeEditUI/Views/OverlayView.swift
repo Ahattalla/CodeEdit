@@ -111,20 +111,18 @@ struct OverlayView<RowView: View, PreviewView: View, Option: Identifiable & Hash
                         )
                         .frame(maxWidth: hasPreview && previewVisible ? 272 : .infinity)
                     }
-                    if hasPreview && previewVisible {
-                        Divider()
-                        if options.isEmpty {
-                            Spacer()
-                                .frame(maxWidth: .infinity)
+                    
+                    Divider()
+                    if options.isEmpty {
+                        Spacer()
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        if let selection, let previewViewBuilder {
+                            previewViewBuilder(selection)
+                                .offset(x: hasPreview && previewVisible ? 0 : 600)
                         } else {
-                            if let selection, let previewViewBuilder {
-                                previewViewBuilder(selection)
-                                    .frame(maxWidth: .infinity)
-                                    .transition(.move(edge: .trailing))
-                            } else {
-                                Text("Select an option to preview")
-                                    .frame(maxWidth: .infinity)
-                            }
+                            Text("Select an option to preview")
+                                .frame(maxWidth: .infinity)
                         }
                     }
                 }
@@ -201,5 +199,14 @@ struct PreviewToggle: View {
         .frame(width: 16, height: 16)
         .padding(4)
         .contentShape(Rectangle())
+    }
+}
+
+struct SlideTransitionModifier: ViewModifier {
+    let insertion: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .trailing)))
     }
 }
